@@ -81,8 +81,8 @@ public class Player
 		return active;
 	}
 
-	public void bet(int what) {
-		// TODO Auto-generated method stub
+	public void bet(int what) 
+	{
 		
 	}
 }

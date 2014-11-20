@@ -36,10 +36,14 @@ public class Table
 		big_blind=big;
 		initial_cash=cash;
 		current=dealer=los.nextInt(size);
-		for(Player p : gracze)
+		
+		System.out.println(gracze.length);
+		for(int i=0;i<gracze.length;i++)
 		{
-			p.setCash(initial_cash);
-			p.setHand(newHand());
+			gracze[i]=new Player(i);
+			gracze[i].setCash(initial_cash);
+			gracze[i].setHand(newHand());
+			System.out.println(i+" Tworze gracza...");
 		}
 	}
 	
@@ -220,9 +224,13 @@ public class Table
 	
 	public Object[] listen(Object[] input)
 	{
-		swapCards(0,null);//Podmiana kart
-		showdown(null);
-		
 		return null;
+	}
+	
+	public static void main (String args[]) 
+	{
+		Table stol = new Table(2,1,2,100);
+		int[] cos = stol.getHand(0);
+		System.out.println(cos[0]);
 	}
 }
