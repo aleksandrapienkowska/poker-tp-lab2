@@ -43,7 +43,7 @@ public class Table
 			gracze[i]=new Player(i);
 			gracze[i].setCash(initial_cash);
 			gracze[i].setHand(newHand());
-			System.out.println(i+" Tworze gracza...");
+			//System.out.println(i+" Tworze gracza...");
 		}
 	}
 	
@@ -227,10 +227,10 @@ public class Table
 		return null;
 	}
 	
-	public static void main (String args[]) 
+	/*public static void main (String args[]) 
 	{
 		Table stol = new Table(2,1,2,100);
 		int[] cos = stol.getHand(0);
 		System.out.println(cos[0]);
-	}
+	}*/
 }
