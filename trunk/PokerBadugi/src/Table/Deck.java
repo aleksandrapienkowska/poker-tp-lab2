@@ -25,7 +25,7 @@ public class Deck
 		QUEEN_a(44,12,1),	QUEEN_b(45,12,2),	QUEEN_c(46,12,3),	QUEEN_d(47,12,4),
 		KING_a(48,13,1),	KING_b(49,13,2),	KING_c(50,13,3),	KING_d(51,13,4);
 		@SuppressWarnings("unused")
-		private final int id; //0 talia, 1 reka gracza, -1 stos odrzuconych
+		private final int id; 
 		private final int wartosc; //wg zasad badugi
 		private final int kolor; //1-czerwo,2-wino,3-zoladz,4-dzwonki
 		
@@ -55,19 +55,14 @@ public class Deck
 	{
 		if(talia.size()==0)
 		{
-			reshuffle();
+			talia=dumped;
+			dumped=new ArrayList<Integer>();
+			Collections.shuffle(talia,random);
 		}
 		temp=talia.get(0);
 		talia.remove(0);
 		talia.trimToSize();
 		return temp;
-	}
-	
-	private void reshuffle()
-	{
-		talia=dumped;
-		dumped=new ArrayList<Integer>();
-		Collections.shuffle(talia,random);
 	}
 	
 	public void dumpCard(int id)
