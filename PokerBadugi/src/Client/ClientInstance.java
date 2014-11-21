@@ -243,12 +243,17 @@ public class ClientInstance {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			
-			
-			
-				
-			
-			
-			
+			String selected="";
+			for(Integer i=0;i<cardOk.length;i++){
+				if(cardOk[i].isSelected()){
+					selected=selected+Integer.toString(i);
+				}
+				else
+					selected=selected+"x";
+			}
+			pw.println("cc"+selected);			
+			pw.flush();
+					
 			}
 		
 	});
@@ -257,6 +262,14 @@ public class ClientInstance {
 	
 	while (text!=null) {
 		try {
+		text = br.readLine();
+		int l=0;
+		while(text.startsWith("set"))
+		{
+			card[l].setText(text.replace("set",""));
+			l++;
+			text = br.readLine();
+		}
 		text = br.readLine();
 		game.append(text);
 
