@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.*;
 
+import Table.Table;
+
 public class Server_v2 {
 
 	private static ServerSocket serverSocket = null;
 	private static Socket clientSocket = null;
 	private static int maxClientsCount = 1;
-
+	public static Table table;
 	public static void main(String args[]) {
 		clientThread_v2[] threads = null;
 
@@ -19,7 +21,7 @@ public class Server_v2 {
 			if (Integer.parseInt(args[1]) <= 6
 					&& Integer.parseInt(args[1]) >= 2) {
 				maxClientsCount = Integer.parseInt(args[1]);
-
+				table=new Table(maxClientsCount,0,0,200);
 				System.out.println("Maksymalna ilość klientów: "
 						+ maxClientsCount + "\nport:" + portNumber);
 			} else {
@@ -42,7 +44,7 @@ public class Server_v2 {
 				int i = 0;
 				for (i = 0; i < maxClientsCount; i++) {
 					if (threads[i] == null) {
-						threads[i] = new clientThread_v2(clientSocket, threads);
+						threads[i] = new clientThread_v2(clientSocket, threads,table.getHand(i), table);						
 						threads[i].start();
 						break;
 					}
