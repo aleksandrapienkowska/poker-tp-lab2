@@ -19,11 +19,13 @@ public class Table
 				active_players,
 				round,
 				max_bet,
-				pot;
+				pot,
+				draw;
 	public int	current;
-	int[]		ttab,
-				results;
+	int[]		ttab;
+	int[][]		results;
 	String		response;
+	Object[]	output;
 	ArrayList<Integer> winners;
 
 	public Table(int size,int small,int big,int cash)
@@ -35,21 +37,25 @@ public class Table
 		small_blind=small;
 		big_blind=big;
 		initial_cash=cash;
-		current=dealer=los.nextInt(size);
-		
-		System.out.println(gracze.length);
+		response="";
+		active_players=size;
+		round=1;
+		dealer=los.nextInt(size);
 		for(int i=0;i<gracze.length;i++)
 		{
 			gracze[i]=new Player(i);
 			gracze[i].setCash(initial_cash);
-			gracze[i].setHand(newHand());
-			//System.out.println(i+" Tworze gracza...");
+			gracze[i].setHand(startingHand());
 		}
+		response+="\nRozpoczyna sie nowa partia...\n";
+		betBlind(dealer,small_blind);
+		betBlind(dealer+1,big_blind);
+		current=nextPlayer(dealer+2);
 	}
 	
 	private int nextPlayer(int try_id)
 	{
-		if(try_id==gracze.length)
+		if(try_id>=gracze.length)
 		{
 			try_id=0;
 		}
@@ -60,7 +66,7 @@ public class Table
 		return try_id;
 	}
 	
-	private int[] newHand()
+	private int[] startingHand()
 	{
 		ttab=new int[4];
 		for(i=0;i<4;i++)
@@ -73,11 +79,12 @@ public class Table
 	private void swapCards(int who, int[] which)
 	{
 		ttab=new int[which.length];
-		for(i=0;i<which.length;i++)
+		for(int i=0;i<which.length;i++)
 		{
 			talia.dumpCard(which[i]);
 			ttab[i]=talia.takeCard();
 		}
+		response+=("Gracz "+who+" wymienia "+which.length+" karty\n");
 		gracze[who].changeCards(which,ttab);
 	}
 	
@@ -101,38 +108,53 @@ public class Table
 			betBlind(++who,what);
 			return;
 		}
-		if(gracze[who].getCash()<=what)
+		if(gracze[who].getCash()<what)
 		{
 			gracze[who].lost=true;
 			gracze[who].active=false;
+			for(int i=0;i<4;i++)
+			{
+				talia.dumpCard(gracze[who].hand[i]);
+			}
+			active_players--;
 			betBlind(++who,what);
 		}
 		else
 		{
 			gracze[who].bet(what);
 			if(what==big_blind)
+			{
+				response+="Gracz "+who+" stawia duza ciemna\n";
+				gracze[who].big_blind=true;
+			}
+			else if(what==small_blind)
+			{
+				response+="Gracz "+who+" stawia mala ciemna\n";
+				gracze[who].small_blind=true;
+			}
 			temp=who;
 		}
 	}
 	
-	private void bet(int who, int what)
+	private void bet(int who, int amount)
 	{
-		if(gracze[who].getCash()<what)
+		if(gracze[who].getCash()<amount)
 		{
-			// !!! NO CHYBA NIE !!!
+			return;
 		}
 		else
 		{
-			if(gracze[who].getCash()==what)
+			if(gracze[who].getCash()==amount)
 			{
 				gracze[who].all_in=true;
 				gracze[who].active=false;
 			}
-			gracze[who].bet(what);
-			pot+=what;
-			if(what>max_bet)
+			gracze[who].bet(amount);
+			response+=("Gracz "+who+" stawia "+amount+", lacznie: "+gracze[who].bet+"\n");
+			pot+=amount;
+			if(amount>max_bet)
 			{
-				max_bet=what;
+				max_bet=amount;
 				for(Player p : gracze)
 				{
 					p.leader=false;
@@ -142,16 +164,79 @@ public class Table
 		}
 	}
 	
+	private boolean checkIfEnd()
+	{
+		temp=nextPlayer(current+1);
+		if((gracze[temp].leader==true && (gracze[temp].big_blind==false || round>1)) 
+			|| active_players==1)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	private void endgame()
+	{
+		if(active_players==1)
+		{
+			for(Player p : gracze)
+			{
+				if(p.active==true)
+				{
+					response+=("Gracz "+p.id+" zgarnia pule!\n");
+					p.cash+=pot;
+					return;
+				}
+			}
+		}
+		else
+		{
+			ttab=new int[active_players];
+			i=0;
+			for(Player p : gracze)
+			{
+				if(p.active==true)
+				{
+					ttab[i++]=p.id;
+				}
+			}
+			showdown(ttab);
+		}
+		newGame();
+	}
+	
 	private void fold(int who)
 	{
+		response+=("Gracz "+who+" folduje\n");
 		gracze[who].fold=true;
 		gracze[who].active=false;
+		active_players--;
+	}
+	
+	private void check(int who)
+	{
+		response+=("Gracz "+who+" checkuje\n");
+		if(gracze[who].big_blind==true && round==1)
+		{
+			newRound();
+		}
 	}
 	
 	private void newRound()
 	{
+		round++;
+		if(round==5)
+		{
+			response+="Minela tura 4\n";
+			endgame();
+			return;
+		}
+		response+="Rozpoczyna sie "+round+" tura...\n";
 		max_bet=0;
-		for(i=0;i<gracze.length;i++)
+		for(int i=0;i<gracze.length;i++)
 		{
 			if(gracze[i].small_blind==true)
 			{
@@ -162,51 +247,134 @@ public class Table
 	
 	private void newGame()
 	{
-		for(i=0;i<gracze.length;i++)
+		response+="\nRozpoczyna sie nowa partia...\n";
+		active_players=0;
+		for(int i=0;i<gracze.length;i++)
 		{
-			if(gracze[i].lost=false)
+			if(gracze[i].cash==0)
 			{
-				gracze[i].active=true;
-				gracze[i].fold=false;
-				gracze[i].all_in=false;
-				gracze[i].big_blind=false;
-				gracze[i].setHand(newHand());
-				gracze[i].changeBet(0,0);
+				gracze[i].lost=true;
 			}
+			if(gracze[i].lost==false)
+			{
+				active_players++;
+				gracze[i].active=true;
+				swapCards(i,gracze[i].getHand());
+			}
+			gracze[i].fold=false;
+			gracze[i].all_in=false;
+			gracze[i].small_blind=false;
+			gracze[i].big_blind=false;
+			gracze[i].changeBet(0,0);
 		}
 		max_bet=0;
 		pot=0;
+		round=1;
 		dealer=nextPlayer(dealer+1);
 		betBlind(dealer,small_blind);
-		gracze[temp].small_blind=true;
-		betBlind(temp+1,big_blind);
-		gracze[temp].big_blind=true;
+		betBlind(dealer+1,big_blind);
 		current=nextPlayer(temp+1);
 	}
 	
-	private ArrayList<Integer> showdown(Player[] who)
+	private void showdown(int[] who)
 	{
-		results=new int[who.length];
-		winners=new ArrayList<Integer>();
-		i=0;
-		for(Player p : who)
+		response+="Showdown!\n";
+		results=new int[who.length][];
+		for(int i=0;i<who.length;i++)
 		{
-			results[i++]=krupier.countHand(p.getHand());
+			results[i]=krupier.countHand(gracze[who[i]].getHand());
 		}
-		for(i=0;i<results.length-1;i++)
+		for(int i=0;i<results.length-1;i++)
 		{
-			best_result=Math.min(results[i],results[i+1]);
-		}
-		for(Player p : who)
-		{
-			if(best_result==krupier.countHand(p.getHand()))
+			for(int j=0;i<results.length;j++)
 			{
-				winners.add(p.getNumber());
+				if(i==j)
+				{
+					continue;
+				}
+				else
+				{
+					for(int k=0;k<4;k++)
+					{
+						if(k<results[i].length-1 && results[i][k]==results[j][k])
+						{
+							continue;
+						}
+						else
+						{
+							if(k==results[i].length-1 && results[i][k]==results[j][k])
+							{
+								gracze[i].points++;
+								gracze[j].points++;
+								break;
+							}
+							else if(results[i][k]<results[j][k])
+							{
+								gracze[i].points++;
+								break;
+							}
+							else
+							{
+								break;
+							}
+						}
+					}
+				}
 			}
 		}
-		return winners;
+		best_result=0;
+		for(Player p : gracze)
+		{
+			if(p.points>best_result)
+			{
+				best_result=p.points;
+			}
+		}
+		
+		payment(best_result,who);
 	}
 	
+	private void payment(int points, int[] who) 
+	{
+		draw=0;
+		for(Player p : gracze)
+		{
+			if(p.points==points)
+			{
+				draw++;
+			}
+		}
+		if(draw==0 && points>=0)
+		{
+			payment(points-1,who);
+		}
+		if(draw==1)
+		{
+			for(Player p : gracze)
+			{
+				if(p.points==points)
+				{
+					if(pot>p.bet*active_players)
+					{
+						p.cash+=p.bet*active_players;
+						response+=("Gracz "+p.id+" bierze z puli "+p.bet*active_players+"\n");
+						payment(points-1,who);
+					}
+					else
+					{
+						p.cash+=pot;
+						response+=("Gracz "+p.id+" bierze z puli "+pot+"\n");
+					}
+				}
+			}
+			payment(points-1,who);
+		}
+		if(draw>1)
+		{
+			response+="Zaszedl remis, co zostalo w puli przepada\n";
+		}
+	}
+
 	public int[] getHand(int player_id)
 	{
 		return gracze[player_id].getHand();
@@ -222,15 +390,66 @@ public class Table
 		return current;
 	}
 	
-	public Object[] listen(Object[] input)
+	public int getMaxBet()
 	{
-		return null;
+		return max_bet;
 	}
 	
-	/*public static void main (String args[]) 
+	public Object[] listen(Object[] input)
 	{
-		Table stol = new Table(2,1,2,100);
-		int[] cos = stol.getHand(0);
-		System.out.println(cos[0]);
-	}*/
+		if((Integer)input[1]==0)
+		{
+			// ### AKCJA BANKOWA ###
+			switch((int)input[2])
+			{
+				case 1:	check((int)input[0]);break;
+				case 2: bet((int)input[0],(int)input[3]);break;
+				case 3: fold((int)input[0]);break;
+			}
+		}
+		if((Integer)input[1]==1)
+		{
+			// ### WYMIANA KART ###
+			ttab=new int[]{(int)input[3],(int)input[4],(int)input[5],(int)input[6]};
+			swapCards((int)input[0],ttab);
+			output=new Object[]{input[0],input[1],0,gracze[(int)input[0]].getHand()[0],
+													gracze[(int)input[0]].getHand()[1],
+													gracze[(int)input[0]].getHand()[2],
+													gracze[(int)input[0]].getHand()[3]};
+		}
+		if(checkIfEnd())
+		{
+			newRound();
+		}
+		else
+		{
+			current=nextPlayer(current+1);
+			response+=("Akcja gracza "+current+"\n");
+		}
+		return output;
+	}
+	
+	public static void main (String args[]) 
+	{
+		Table stol = new Table(3,1,2,100);
+		/*int[] cos;
+		for (int i = 0; i<13;i++) 
+		{
+			System.out.println("Talia : "+stol.talia.talia.size());
+			System.out.println("Dumped: "+stol.talia.dumped.size());
+			cos = stol.getHand(0);
+			System.out.println(cos[0] + " " + cos[1] + " " + cos[2] + " "+ cos[3]);
+			System.out.println(stol.response);
+			stol.response="";
+			Object[] foo = new Object[]{0,1,0,stol.gracze[0].getHand()[0],
+											stol.gracze[0].getHand()[1],
+											stol.gracze[0].getHand()[2],
+											stol.gracze[0].getHand()[3]};
+			stol.listen(foo);
+			//stol.swapCards(0, stol.gracze[0].getHand());
+		}*/
+		//System.out.println(stol.nextPlayer(1));
+		System.out.println(stol.response);
+		System.out.println(stol.current);
+	}
 }
