@@ -67,7 +67,9 @@ public class Deck
 	
 	public void dumpCard(int id)
 	{
+		System.out.println("Wywalam "+id);
 		dumped.add(id);
+		dumped.trimToSize();
 	}
 	
 	public static int val(int id)

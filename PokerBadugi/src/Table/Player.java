@@ -2,10 +2,11 @@ package Table;
 
 public class Player 
 {
-	int 	number,
+	int 	id,
 			bet,
 			cash,
-			temp;
+			temp,
+			points;
 	int[] 	hand;
 	boolean	lost,
 			fold,
@@ -17,7 +18,8 @@ public class Player
 	
 	Player(int which)
 	{
-		number=which;
+		id=which;
+		active=true;
 	}
 	
 	public void setHand (int[] cards)
@@ -28,9 +30,9 @@ public class Player
 	public void changeCards(int[] which, int[] newCards)
 	{
 		temp=0;
-		for(int i : hand)
+		for(int i=0;i<hand.length;i++)
 		{
-			for(int j : which)
+			for(int j=0;j<which.length;j++)
 			{	
 				if(hand[i]==which[j])
 				{
@@ -47,7 +49,7 @@ public class Player
 	
 	public int getNumber()
 	{
-		return number;
+		return id;
 	}
 	
 	public int getCash()
@@ -64,11 +66,11 @@ public class Player
 	{
 		if(how==0)
 		{
-			bet=how;
+			bet=amount;
 		}
 		if(how==1)
 		{
-			bet+=how;
+			bet+=amount;
 		}
 	}
 	public boolean checkAll()
@@ -83,6 +85,7 @@ public class Player
 
 	public void bet(int what) 
 	{
-		
+		cash-=what;
+		bet+=what;
 	}
 }

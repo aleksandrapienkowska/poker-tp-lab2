@@ -1,18 +1,20 @@
 package Table;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.ListIterator;
 
 public class Evaluator 
 {
 	private int			tint,
-						points;
+						length;
+	private int[]		result;
 	private ArrayList<Integer> 	other_colors,
 								temp;
 	private ArrayList<ArrayList<Integer>> figures;
 	private ListIterator<Integer> it;
 		
-	public int countHand(int[] input_hand)
+	public int[] countHand(int[] input_hand)
 	{
 		Arrays.sort(input_hand);
 		temp=new ArrayList<Integer>(0);
@@ -58,25 +60,28 @@ public class Evaluator
 		{
 			temp.add(arl.get(0));
 		}
+		length=temp.size();
+		result=new int[length];
+		System.out.println(length+" "+temp);// ###
 		
-		for(Integer i : temp)
+		for(int i=0;i<length;i++)
 		{
-			for(Integer j : temp)
-			{
-				if(Deck.col(i)==Deck.col(j) && Deck.val(i)>Deck.val(j))
-				{
-					i=-1;
-				}
-			}
+			temp.set(i,100*(4-length)+Deck.val(temp.get(i)));
+			System.out.println(temp.get(i));
 		}
-		
-		for(Integer i : temp)
+		Collections.sort(temp,Collections.reverseOrder());
+		for(int i=0;i<length;i++)
 		{
-			if(i>=0)
-			{
-				points+=Deck.val(i);
-			}
+			result[i]=temp.get(i);
 		}
-		return points;	
+		System.out.println(temp);
+		return result;
 	}
+	
+	/*public static void main (String args[]) 
+	{
+		Evaluator krupier = new Evaluator();
+		int[] input = {4,5,40,0};
+		krupier.countHand(input);
+	}*/
 }
