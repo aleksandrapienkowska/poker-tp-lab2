@@ -122,15 +122,10 @@ public class ClientInstance {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 		
-		try{
-			int k=Integer.parseInt(Payment.getText());
-		}
-		catch(Exception z){
-			game.append("Nieprawidlowa kwota");
-		}
-		pw.println(sendAction("ch", Payment.getText()));
+		
+		pw.println("ch");
 		pw.flush();
-		game.append(sendAction("ch", Payment.getText()));
+		//game.append(sendAction("ch", Payment.getText()));
 
 		
 			
@@ -152,7 +147,7 @@ public class ClientInstance {
 			}
 			pw.println(sendAction("be", Payment.getText()));
 			pw.flush();
-				game.append(sendAction("be", Payment.getText()));
+				//game.append(sendAction("be", Payment.getText()));
 			
 			
 			}
@@ -171,7 +166,7 @@ public class ClientInstance {
 			}
 			pw.println(sendAction("ra", Payment.getText()));
 			pw.flush();
-				game.append(sendAction("ra", Payment.getText()));
+				//game.append(sendAction("ra", Payment.getText()));
 			
 			
 			
@@ -191,7 +186,7 @@ public class ClientInstance {
 			}
 			pw.println(sendAction("ca", Payment.getText()));
 			pw.flush();
-				game.append(sendAction("ca", Payment.getText()));
+				//game.append(sendAction("ca", Payment.getText()));
 			
 			
 			
@@ -209,9 +204,9 @@ public class ClientInstance {
 			catch(Exception z){
 				game.append("Nieprawidlowa kwota");
 			}
-			pw.println(sendAction("fo", Payment.getText()));
+			pw.println("fo");
 			pw.flush();
-				game.append(sendAction("fo", Payment.getText()));
+				//game.append("fo", Payment.getText()));
 			
 			
 			
@@ -231,7 +226,7 @@ public class ClientInstance {
 			}
 			pw.println(sendAction("al", Payment.getText()));
 			pw.flush();
-				game.append(sendAction("al", Payment.getText()));
+				//game.append(sendAction("al", Payment.getText()));
 			
 			
 			
@@ -248,8 +243,9 @@ public class ClientInstance {
 				if(cardOk[i].isSelected()){
 					selected=selected+Integer.toString(i);
 				}
-				else
-					selected=selected+"x";
+				else{
+					selected=selected+"n";
+				}
 			}
 			pw.println("cc"+selected);			
 			pw.flush();
@@ -264,9 +260,14 @@ public class ClientInstance {
 		try {
 		text = br.readLine();
 		int l=0;
-		while(text.startsWith("set"))
+	while(text.startsWith("setBill")){
+			BalanceAmount.setText(text.replace("setBill",""));
+			text = br.readLine();	
+	}
+		
+		while(text.startsWith("setCards"))
 		{
-			card[l].setText(text.replace("set",""));
+			card[l].setText(text.replace("setCards",""));
 			l++;
 			text = br.readLine();
 		}
