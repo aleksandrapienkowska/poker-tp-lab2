@@ -13,6 +13,7 @@ public class Server_v2 {
 	private static Socket clientSocket = null;
 	private static int maxClientsCount = 1;
 	public static Table table;
+	public static int bill;
 	public static void main(String args[]) {
 		clientThread_v2[] threads = null;
 
@@ -24,6 +25,7 @@ public class Server_v2 {
 				table=new Table(maxClientsCount,0,0,200);
 				System.out.println("Maksymalna ilość klientów: "
 						+ maxClientsCount + "\nport:" + portNumber);
+				bill=Integer.parseInt(args[2]);
 			} else {
 				System.out
 						.println("Podano nieprawidłowe ustawienia początkowe");
@@ -44,7 +46,7 @@ public class Server_v2 {
 				int i = 0;
 				for (i = 0; i < maxClientsCount; i++) {
 					if (threads[i] == null) {
-						threads[i] = new clientThread_v2(clientSocket, threads,table.getHand(i), table);						
+						threads[i] = new clientThread_v2(clientSocket, threads,table.getHand(i), table,  bill);						
 						threads[i].start();
 						break;
 					}
