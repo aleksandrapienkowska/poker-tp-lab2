@@ -144,6 +144,7 @@ public class Table
 			pot+=what;
 			if(what==big_blind)
 			{
+				max_bet=big_blind;
 				response+="Gracz "+who+" stawia duza ciemna|";
 				gracze[who].big_blind=true;
 			}
