@@ -98,8 +98,9 @@ public class Table
 			if(which[i]>=0)
 			{
 				talia.dumpCard(which[i]);
+				System.out.println("Wywalam "+ttab[temp++]);
 				ttab[temp]=talia.takeCard();
-				//System.out.println("Ciagne "+ttab[temp++]);
+				System.out.println("Ciagne "+ttab[temp++]);
 			}
 		}
 		response+=("Gracz "+who+" wymienia "+ttab.length+" karty|");
