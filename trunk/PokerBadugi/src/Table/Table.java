@@ -398,6 +398,11 @@ public class Table
 		return gracze[player_id].getHand();
 	}
 	
+	public int getCash(int player_id)
+	{
+		return gracze[player_id].cash;
+	}
+	
 	public boolean checkActive(int player_id)
 	{
 		return gracze[player_id].active;
