@@ -234,10 +234,10 @@ public class Table
 	private void check(int who)
 	{
 		response+=("Gracz "+who+" checkuje|");
-		if(gracze[who].big_blind==true && round==1)
+		/*if(gracze[who].big_blind==true && round==1)
 		{
 			newRound();
-		}
+		}*/
 	}
 	
 	private void newRound()
@@ -450,6 +450,10 @@ public class Table
 		}
 		if((int)input[1]==1 && checkIfEnd())
 		{
+			if(active_players==1)
+			{
+				endgame();
+			}
 			newRound();
 		}
 		else
@@ -458,7 +462,6 @@ public class Table
 			response+=("Akcja gracza "+current+"|");
 		}
 		System.out.println(response);
-		Arrays.deepToString(output);
 		return output;
 	}
 	
