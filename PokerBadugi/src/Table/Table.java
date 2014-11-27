@@ -250,7 +250,7 @@ public class Table
 			endgame();
 			return;
 		}
-		response+=("Rozpoczyna sie "+round+" tura...|");
+		response+=("|Rozpoczyna sie "+round+" tura...|");
 		max_bet=0;
 		for(Player p : gracze)
 		{
@@ -261,6 +261,7 @@ public class Table
 			if(gracze[i].big_blind==true)
 			{
 				current=nextPlayer(i+1);
+				response+=("Akcja gracza "+current+"|");
 			}
 		}
 	}
