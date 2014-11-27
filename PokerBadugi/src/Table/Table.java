@@ -50,9 +50,10 @@ public class Table
 			System.out.println(Arrays.toString(gracze[i].hand));
 		}
 		response+=("|Rozpoczyna sie nowa partia...|");
-		betBlind(dealer,small_blind);
+		betBlind(dealer+1,small_blind);
 		betBlind(temp+1,big_blind);
 		current=nextPlayer(temp+1);
+		response+=("Akcja gracza "+current+"|");
 	}
 	
 	private int nextPlayer(int try_id)
@@ -96,7 +97,7 @@ public class Table
 			{
 				talia.dumpCard(which[i]);
 				ttab[temp]=talia.takeCard();
-				System.out.println("Ciagne "+ttab[temp++]);
+				//System.out.println("Ciagne "+ttab[temp++]);
 			}
 		}
 		response+=("Gracz "+who+" wymienia "+ttab.length+" karty|");
@@ -251,9 +252,13 @@ public class Table
 		}
 		response+=("Rozpoczyna sie "+round+" tura...|");
 		max_bet=0;
+		for(Player p : gracze)
+		{
+			p.leader=false;
+		}
 		for(int i=0;i<gracze.length;i++)
 		{
-			if(gracze[i].small_blind==true)
+			if(gracze[i].big_blind==true)
 			{
 				current=nextPlayer(i+1);
 			}
@@ -288,9 +293,10 @@ public class Table
 		pot=0;
 		round=1;
 		dealer=nextPlayer(dealer+1);
-		betBlind(dealer,small_blind);
-		betBlind(dealer+1,big_blind);
+		betBlind(dealer+1,small_blind);
+		betBlind(temp+1,big_blind);
 		current=nextPlayer(temp+1);
+		response+=("Akcja gracza "+current+"|");
 	}
 	
 	private void showdown(int[] who)
@@ -416,6 +422,11 @@ public class Table
 	public int getMaxBet()
 	{
 		return max_bet;
+	}
+	
+	public int getPot()
+	{
+		return pot;
 	}
 	
 	public String getResponse()
