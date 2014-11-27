@@ -98,7 +98,7 @@ public class Table
 			if(which[i]>=0)
 			{
 				talia.dumpCard(which[i]);
-				System.out.println("Wywalam "+ttab[temp++]);
+				System.out.println("Wywalam "+which[i]);
 				ttab[temp]=talia.takeCard();
 				System.out.println("Ciagne "+ttab[temp++]);
 			}
@@ -441,6 +441,7 @@ public class Table
 	
 	public Object[] listen(Object[] input)
 	{
+		System.out.println(Arrays.deepToString(input));
 		response="";
 		if((Integer)input[1]==1)
 		{
