@@ -41,6 +41,7 @@ public class Table
 		response="";
 		active_players=size;
 		round=1;
+		pot=0;
 		dealer=los.nextInt(size);
 		for(int i=0;i<gracze.length;i++)
 		{
@@ -167,8 +168,8 @@ public class Table
 				gracze[who].active=false;
 			}
 			gracze[who].bet(amount);
-			response+=("Gracz "+who+" stawia "+amount+", lacznie: "+gracze[who].bet+"|");
 			pot+=amount;
+			response+=("Gracz "+who+" stawia "+amount+", lacznie: "+gracze[who].bet+"|");
 			if(amount>max_bet)
 			{
 				max_bet=amount;
