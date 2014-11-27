@@ -40,7 +40,9 @@ public class ClientInstance {
 	 JLabel Balance=new JLabel("Stan konta: ");
 	 JLabel BalanceAmount=new JLabel();
 	 JLabel TotalAmount=new JLabel();
-	 JLabel Total=new JLabel("Stawka w grze: ");		
+	 JLabel Total=new JLabel("Stawka w grze: ");
+	 JLabel MaxBet=new JLabel("Najwyższa stawka: ");
+	 JLabel MaxBetAmount=new JLabel();
 	 JPanel PanelAuction=new JPanel();
 	 JButton Check= new JButton("Check");
 	 JButton Bet= new JButton("Bet");
@@ -55,25 +57,28 @@ public class ClientInstance {
 	 JLabel[] card=new JLabel[4];
 	 JCheckBox[] cardOk =new JCheckBox[4];
 	 JFrame window =new JFrame("Badugi");
-	 JTextArea game= new JTextArea();
-	 JScrollPane scrollpoleDialogu = new JScrollPane(game, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); 
+	 JTextArea game= new JTextArea(800,200);
 	 Writer wr ;
 	 PrintWriter pw;
-
 	
+
+	 
 	public ClientInstance(OutputStream out, InputStream in){
-		
+	
 		game.setEditable(false);
 		game.setLineWrap(true);
+		window.add(game);
+		window.add(new JScrollPane(game,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS));
 		 DefaultCaret caret = (DefaultCaret)game.getCaret();
 	        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE); 
-	        window.setLayout(new GridLayout(3,1));
+	        window.setLayout(new GridLayout(4,1));
 	        PanelInfo.setLayout(new GridLayout(3,2));
 			PanelInfo.add(Balance);
 			PanelInfo.add(BalanceAmount);
 			PanelInfo.add(Total);		
 			PanelInfo.add(TotalAmount);
-			PanelInfo.add(game);
+			PanelInfo.add(MaxBet);
+			PanelInfo.add(MaxBetAmount);
 			PanelAuction.setLayout(new FlowLayout());
 			PanelAuction.add(Check);
 			PanelAuction.add(Bet);
@@ -102,7 +107,7 @@ public class ClientInstance {
 	        window.setSize(800,500);
 			window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			window.setVisible(true);
-	
+			
 			
 			this.in=in;
 			this.out =out;
@@ -260,6 +265,7 @@ public class ClientInstance {
 		try {
 		text = br.readLine();
 		int l=0;
+	
 	while(text.startsWith("setBill")){
 			BalanceAmount.setText(text.replace("setBill",""));
 			text = br.readLine();	
@@ -267,11 +273,17 @@ public class ClientInstance {
 		
 		while(text.startsWith("setCards"))
 		{
+			
 			card[l].setText(text.replace("setCards",""));
+			//System.out.println(text.replace("setCards",""));
+			window.repaint();
 			l++;
 			text = br.readLine();
+			
 		}
-		text = br.readLine();
+		
+		
+		
 		game.append(text);
 
 		} catch (IOException e) {
