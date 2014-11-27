@@ -48,7 +48,6 @@ public class Table
 			gracze[i].setCash(initial_cash);
 			gracze[i].setHand(startingHand());
 			System.out.println(Arrays.toString(gracze[i].hand));
-			
 		}
 		response+=("\nRozpoczyna sie nowa partia...\n");
 		betBlind(dealer,small_blind);
@@ -100,7 +99,7 @@ public class Table
 				System.out.println("Ciagne "+ttab[temp++]);
 			}
 		}
-		response+=("Gracz "+who+" wymienia "+which.length+" karty\n");
+		response+=("Gracz "+who+" wymienia "+ttab.length+" karty\n");
 		gracze[who].changeCards(which,ttab);
 	}
 	
@@ -431,6 +430,7 @@ public class Table
 				case 1:	check((int)input[0]);break;
 				case 2: bet((int)input[0],(int)input[3]);break;
 				case 3: fold((int)input[0]);break;
+				case 4: //quit;
 			}
 		}
 		if((Integer)input[1]==2)
@@ -443,7 +443,7 @@ public class Table
 													gracze[(int)input[0]].getHand()[2],
 													gracze[(int)input[0]].getHand()[3]};
 		}
-		if(checkIfEnd())
+		if((int)input[1]==1 && checkIfEnd())
 		{
 			newRound();
 		}
