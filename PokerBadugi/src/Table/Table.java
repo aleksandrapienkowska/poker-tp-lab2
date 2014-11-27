@@ -47,6 +47,7 @@ public class Table
 			gracze[i]=new Player(i);
 			gracze[i].setCash(initial_cash);
 			gracze[i].setHand(startingHand());
+			System.out.println(Arrays.toString(gracze[i].hand));
 		}
 		response+=("\nRozpoczyna sie nowa partia...\n");
 		betBlind(dealer,small_blind);
@@ -95,7 +96,7 @@ public class Table
 			{
 				talia.dumpCard(which[i]);
 				ttab[temp]=talia.takeCard();
-				System.out.println(ttab[temp++]);
+				System.out.println("Ciagne "+ttab[temp++]);
 			}
 		}
 		response+=("Gracz "+who+" wymienia "+which.length+" karty\n");
@@ -455,10 +456,10 @@ public class Table
 		return output;
 	}
 	
-	public static void main (String args[]) 
+	/*public static void main (String args[]) 
 	{
 		Table stol = new Table(3,1,2,100);
-		/*int[] cos;
+		int[] cos;
 		for (int i = 0; i<13;i++) 
 		{
 			System.out.println("Talia : "+stol.talia.talia.size());
@@ -473,9 +474,9 @@ public class Table
 											stol.gracze[0].getHand()[3]};
 			stol.listen(foo);
 			//stol.swapCards(0, stol.gracze[0].getHand());
-		}*/
+		}
 		//System.out.println(stol.nextPlayer(1));
 		System.out.println(stol.response);
 		System.out.println(stol.current);
-	}
+	}*/
 }
