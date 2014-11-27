@@ -1,6 +1,7 @@
 package Table;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Table 
@@ -81,8 +82,11 @@ public class Table
 		ttab=new int[which.length];
 		for(int i=0;i<which.length;i++)
 		{
-			talia.dumpCard(which[i]);
-			ttab[i]=talia.takeCard();
+			if(which[i]>=0)
+			{
+				talia.dumpCard(which[i]);
+				ttab[i]=talia.takeCard();
+			}
 		}
 		response+=("Gracz "+who+" wymienia "+which.length+" karty\n");
 		gracze[who].changeCards(which,ttab);
@@ -400,6 +404,7 @@ public class Table
 	
 	public Object[] listen(Object[] input)
 	{
+		Arrays.deepToString(input);
 		if((Integer)input[1]==1)
 		{
 			// ### AKCJA BANKOWA ###
@@ -429,6 +434,7 @@ public class Table
 			current=nextPlayer(current+1);
 			response+=("Akcja gracza "+current+"\n");
 		}
+		Arrays.deepToString(output);
 		return output;
 	}
 	
