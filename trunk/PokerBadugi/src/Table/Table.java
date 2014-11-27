@@ -48,7 +48,7 @@ public class Table
 			gracze[i].setCash(initial_cash);
 			gracze[i].setHand(startingHand());
 		}
-		response+="\nRozpoczyna sie nowa partia...\n";
+		response+=("\nRozpoczyna sie nowa partia...\n");
 		betBlind(dealer,small_blind);
 		betBlind(temp+1,big_blind);
 		current=nextPlayer(temp+1);
@@ -79,13 +79,23 @@ public class Table
 	
 	private void swapCards(int who, int[] which)
 	{
-		ttab=new int[which.length];
+		temp=0;
+		for(int i=0;i<which.length;i++)
+		{
+			if(which[i]>=0)
+			{
+				temp++;
+			}
+		}
+		ttab=new int[temp];
+		temp=0;
 		for(int i=0;i<which.length;i++)
 		{
 			if(which[i]>=0)
 			{
 				talia.dumpCard(which[i]);
-				ttab[i]=talia.takeCard();
+				ttab[temp]=talia.takeCard();
+				System.out.println(ttab[temp++]);
 			}
 		}
 		response+=("Gracz "+who+" wymienia "+which.length+" karty\n");
@@ -234,11 +244,11 @@ public class Table
 		round++;
 		if(round==5)
 		{
-			response+="Minela tura 4\n";
+			response+=("Minela tura 4\n");
 			endgame();
 			return;
 		}
-		response+="Rozpoczyna sie "+round+" tura...\n";
+		response+=("Rozpoczyna sie "+round+" tura...\n");
 		max_bet=0;
 		for(int i=0;i<gracze.length;i++)
 		{
@@ -272,7 +282,7 @@ public class Table
 			gracze[i].changeBet(0,0);
 			gracze[i].points=0;
 		}
-		response+="\nRozpoczyna sie nowa partia...\n";
+		response+=("\nRozpoczyna sie nowa partia...\n");
 		max_bet=0;
 		pot=0;
 		round=1;
@@ -284,7 +294,7 @@ public class Table
 	
 	private void showdown(int[] who)
 	{
-		response+="Showdown!\n";
+		response+=("Showdown!\n");
 		results=new int[who.length][];
 		for(int i=0;i<who.length;i++)
 		{
@@ -378,7 +388,7 @@ public class Table
 		}
 		if(draw>1)
 		{
-			response+="Zaszedl remis, co zostalo w puli przepada\n";
+			response+=("Zaszedl remis, co zostalo w puli przepada\n");
 		}
 	}
 
@@ -402,8 +412,14 @@ public class Table
 		return max_bet;
 	}
 	
+	public String getResponse()
+	{
+		return response;
+	}
+	
 	public Object[] listen(Object[] input)
 	{
+		response="";
 		Arrays.deepToString(input);
 		if((Integer)input[1]==1)
 		{
@@ -434,6 +450,7 @@ public class Table
 			current=nextPlayer(current+1);
 			response+=("Akcja gracza "+current+"\n");
 		}
+		System.out.println(response);
 		Arrays.deepToString(output);
 		return output;
 	}
