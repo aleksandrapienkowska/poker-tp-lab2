@@ -48,6 +48,7 @@ public class Table
 			gracze[i].setCash(initial_cash);
 			gracze[i].setHand(startingHand());
 			System.out.println(Arrays.toString(gracze[i].hand));
+			
 		}
 		response+=("\nRozpoczyna sie nowa partia...\n");
 		betBlind(dealer,small_blind);
