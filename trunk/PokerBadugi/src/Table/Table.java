@@ -49,8 +49,8 @@ public class Table
 		}
 		response+="\nRozpoczyna sie nowa partia...\n";
 		betBlind(dealer,small_blind);
-		betBlind(dealer+1,big_blind);
-		current=nextPlayer(dealer+2);
+		betBlind(temp+1,big_blind);
+		current=nextPlayer(temp+1);
 	}
 	
 	private int nextPlayer(int try_id)
@@ -168,7 +168,7 @@ public class Table
 	{
 		temp=nextPlayer(current+1);
 		if((gracze[temp].leader==true && (gracze[temp].big_blind==false || round>1)) 
-			|| active_players==1)
+			|| active_players==1 || (gracze[current].big_blind==true && round==1))
 		{
 			return true;
 		}
@@ -198,7 +198,7 @@ public class Table
 			i=0;
 			for(Player p : gracze)
 			{
-				if(p.active==true)
+				if(p.active==true || p.all_in==true)
 				{
 					ttab[i++]=p.id;
 				}
@@ -240,19 +240,19 @@ public class Table
 		{
 			if(gracze[i].small_blind==true)
 			{
-				current=nextPlayer(i);
+				current=nextPlayer(i+1);
 			}
 		}
 	}
 	
 	private void newGame()
 	{
-		response+="\nRozpoczyna sie nowa partia...\n";
 		active_players=0;
 		for(int i=0;i<gracze.length;i++)
 		{
 			if(gracze[i].cash==0)
 			{
+				response+=("Gracz "+i+" przegrywa");
 				gracze[i].lost=true;
 			}
 			if(gracze[i].lost==false)
@@ -266,7 +266,9 @@ public class Table
 			gracze[i].small_blind=false;
 			gracze[i].big_blind=false;
 			gracze[i].changeBet(0,0);
+			gracze[i].points=0;
 		}
+		response+="\nRozpoczyna sie nowa partia...\n";
 		max_bet=0;
 		pot=0;
 		round=1;
@@ -283,6 +285,7 @@ public class Table
 		for(int i=0;i<who.length;i++)
 		{
 			results[i]=krupier.countHand(gracze[who[i]].getHand());
+			response+=("Gracz "+who[i]+" ma "+gracze[who[i]].hand.toString()+"\n");
 		}
 		for(int i=0;i<results.length-1;i++)
 		{
@@ -397,7 +400,7 @@ public class Table
 	
 	public Object[] listen(Object[] input)
 	{
-		if((Integer)input[1]==0)
+		if((Integer)input[1]==1)
 		{
 			// ### AKCJA BANKOWA ###
 			switch((int)input[2])
@@ -407,7 +410,7 @@ public class Table
 				case 3: fold((int)input[0]);break;
 			}
 		}
-		if((Integer)input[1]==1)
+		if((Integer)input[1]==2)
 		{
 			// ### WYMIANA KART ###
 			ttab=new int[]{(int)input[3],(int)input[4],(int)input[5],(int)input[6]};
