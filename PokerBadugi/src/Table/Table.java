@@ -138,6 +138,7 @@ public class Table
 		else
 		{
 			gracze[who].bet(what);
+			pot+=what;
 			if(what==big_blind)
 			{
 				response+="Gracz "+who+" stawia duza ciemna|";
