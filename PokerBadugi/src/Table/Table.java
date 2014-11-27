@@ -441,7 +441,6 @@ public class Table
 	public Object[] listen(Object[] input)
 	{
 		response="";
-		Arrays.deepToString(input);
 		if((Integer)input[1]==1)
 		{
 			// ### AKCJA BANKOWA ###
@@ -463,25 +462,23 @@ public class Table
 													gracze[(int)input[0]].getHand()[2],
 													gracze[(int)input[0]].getHand()[3]};
 		}
-		if(new_game==false) 
+		if ((int) input[1] == 1 && checkIfEnd()) 
 		{
-			if ((int) input[1] == 1 && checkIfEnd()) 
+			if (active_players == 1) 
 			{
-				if (active_players == 1) {
-					endgame();
-				}
-				newRound();
-			} 
-			else 
-			{
-				current = nextPlayer(current + 1);
-				response += ("Akcja gracza " + current + "|");
+				endgame();
 			}
-		}
-		else
+			if(new_game==false)
+			{
+				newRound();
+			}
+		} 
+		else 
 		{
-			new_game=false;
+			current = nextPlayer(current + 1);
+			response += ("Akcja gracza " + current + "|");
 		}
+		new_game=false;
 		System.out.println(response);
 		return output;
 	}
