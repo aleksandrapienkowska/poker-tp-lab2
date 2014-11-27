@@ -28,6 +28,7 @@ public class Table
 	String		response;
 	Object[]	output;
 	ArrayList<Integer> winners;
+	boolean 	new_game;
 
 	public Table(int size,int small,int big,int cash)
 	{
@@ -206,7 +207,6 @@ public class Table
 				{
 					response+=("Gracz "+p.id+" zgarnia pule!|");
 					p.cash+=pot;
-					return;
 				}
 			}
 		}
@@ -270,6 +270,7 @@ public class Table
 	
 	private void newGame()
 	{
+		new_game=true;
 		active_players=0;
 		for(int i=0;i<gracze.length;i++)
 		{
@@ -462,18 +463,24 @@ public class Table
 													gracze[(int)input[0]].getHand()[2],
 													gracze[(int)input[0]].getHand()[3]};
 		}
-		if((int)input[1]==1 && checkIfEnd())
+		if(new_game==false) 
 		{
-			if(active_players==1)
+			if ((int) input[1] == 1 && checkIfEnd()) 
 			{
-				endgame();
+				if (active_players == 1) {
+					endgame();
+				}
+				newRound();
+			} 
+			else 
+			{
+				current = nextPlayer(current + 1);
+				response += ("Akcja gracza " + current + "|");
 			}
-			newRound();
 		}
 		else
 		{
-			current=nextPlayer(current+1);
-			response+=("Akcja gracza "+current+"|");
+			new_game=false;
 		}
 		System.out.println(response);
 		return output;
