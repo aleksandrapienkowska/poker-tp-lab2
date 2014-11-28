@@ -11,7 +11,7 @@ public class Table
 	Evaluator	krupier;
 	Random		los;
 	int			count, 
-				i,temp,
+				i,temp,foo,bar,
 				small_blind,
 				big_blind,
 				initial_cash,
@@ -21,14 +21,17 @@ public class Table
 				round,
 				max_bet,
 				pot,
-				draw;
+				draw,
+				swapped;
 	public int	current;
 	int[]		ttab;
 	int[][]		results;
 	String		response;
 	Object[]	output;
 	ArrayList<Integer> winners;
-	boolean 	new_game;
+	boolean 	new_game,
+				swapping,
+				alive;
 
 	public Table(int size,int small,int big,int cash)
 	{
@@ -36,12 +39,13 @@ public class Table
 		talia = new Deck();
 		krupier=new Evaluator();
 		los=new Random();
+		alive=true;
 		small_blind=small;
 		big_blind=big;
 		initial_cash=cash;
 		response="";
 		active_players=size;
-		round=4;
+		round=1;
 		pot=0;
 		dealer=los.nextInt(size);
 		for(int i=0;i<gracze.length;i++)
@@ -49,7 +53,6 @@ public class Table
 			gracze[i]=new Player(i);
 			gracze[i].setCash(initial_cash);
 			gracze[i].setHand(startingHand());
-			System.out.println(Arrays.toString(gracze[i].hand));
 		}
 		System.out.println("|Rozpoczyna sie nowa partia...|");
 		betBlind(dealer+1,small_blind);
@@ -58,19 +61,7 @@ public class Table
 		System.out.println("Akcja gracza "+current+"|");
 	}
 	
-	private int nextPlayer(int try_id)
-	{
-		if(try_id>=gracze.length)
-		{
-			try_id=0;
-		}
-		if(!gracze[try_id].checkActive())
-		{
-			try_id=nextPlayer(1+try_id);
-		}
-		return try_id;
-	}
-	
+	// ##### OBSLUGA GRACZY #####
 	private int[] startingHand()
 	{
 		ttab=new int[4];
@@ -98,9 +89,7 @@ public class Table
 			if(which[i]>=0)
 			{
 				talia.dumpCard(which[i]);
-				System.out.println("Wywalam "+which[i]);
 				ttab[temp]=talia.takeCard();
-				System.out.println("Ciagne "+ttab[temp++]);
 			}
 		}
 		System.out.println("Gracz "+who+" wymienia "+ttab.length+" karty|");
@@ -116,7 +105,8 @@ public class Table
 		}
 		if(active_players==0 && what==small_blind)
 		{
-			//	!!! WSZYSCY BIEDNI ZAMYKAMY STOL !!!
+			alive=false;
+			return;
 		}
 		if(who==gracze.length)
 		{  
@@ -185,6 +175,33 @@ public class Table
 		}
 	}
 	
+	private void fold(int who)
+	{
+		System.out.println("Gracz "+who+" folduje|");
+		gracze[who].fold=true;
+		gracze[who].active=false;
+		active_players--;
+	}
+	
+	private void check(int who)
+	{
+		System.out.println("Gracz "+who+" checkuje|");
+	}
+	
+	// ##### OBSLUGA ROZGRYWKI #####
+	private int nextPlayer(int try_id)
+	{
+		if(try_id>=gracze.length)
+		{
+			try_id=0;
+		}
+		if(!gracze[try_id].checkActive())
+		{
+			try_id=nextPlayer(1+try_id);
+		}
+		return try_id;
+	}
+	
 	private boolean checkIfEnd()
 	{
 		temp=nextPlayer(current+1);
@@ -199,52 +216,6 @@ public class Table
 		}
 	}
 	
-	private void endgame()
-	{
-		if(active_players==1)
-		{
-			for(Player p : gracze)
-			{
-				if(p.active==true)
-				{
-					System.out.println("Gracz "+p.id+" zgarnia pule!|");
-					p.cash+=pot;
-				}
-			}
-		}
-		else
-		{
-			ttab=new int[active_players];
-			i=0;
-			for(Player p : gracze)
-			{
-				if(p.active==true || p.all_in==true)
-				{
-					ttab[i++]=p.id;
-				}
-			}
-			showdown(ttab);
-		}
-		newGame();
-	}
-	
-	private void fold(int who)
-	{
-		System.out.println("Gracz "+who+" folduje|");
-		gracze[who].fold=true;
-		gracze[who].active=false;
-		active_players--;
-	}
-	
-	private void check(int who)
-	{
-		System.out.println("Gracz "+who+" checkuje|");
-		/*if(gracze[who].big_blind==true && round==1)
-		{
-			newRound();
-		}*/
-	}
-	
 	private void newRound()
 	{
 		round++;
@@ -254,6 +225,8 @@ public class Table
 			endgame();
 			return;
 		}
+		swapped=0;
+		swapping=true;
 		System.out.println("|Rozpoczyna sie "+round+" tura...|");
 		max_bet=0;
 		for(Player p : gracze)
@@ -298,6 +271,8 @@ public class Table
 		System.out.println("|Rozpoczyna sie nowa partia...|");
 		max_bet=0;
 		pot=0;
+		swapped=0;
+		swapping=false;
 		round=1;
 		dealer=nextPlayer(dealer+1);
 		betBlind(dealer+1,small_blind);
@@ -306,6 +281,36 @@ public class Table
 		System.out.println("Akcja gracza "+current+"|");
 	}
 	
+	private void endgame()
+	{
+		if(active_players==1)
+		{
+			for(Player p : gracze)
+			{
+				if(p.active==true)
+				{
+					System.out.println("Gracz "+p.id+" zgarnia pule!|");
+					p.cash+=pot;
+				}
+			}
+		}
+		else
+		{
+			ttab=new int[active_players];
+			i=0;
+			for(Player p : gracze)
+			{
+				if(p.active==true || p.all_in==true)
+				{
+					ttab[i++]=p.id;
+				}
+			}
+			showdown(ttab);
+		}
+		newGame();
+	}
+	
+	// ##### OBSLUGA SHOWDOWN'U ######
 	private void showdown(int[] who)
 	{
 		System.out.println("Showdown!|");
@@ -313,41 +318,56 @@ public class Table
 		for(int i=0;i<who.length;i++)
 		{
 			results[i]=krupier.countHand(gracze[who[i]].getHand());
-			System.out.println("Gracz "+who[i]+" ma "+gracze[who[i]].hand.toString()+"|");
+			System.out.println("Gracz "+who[i]+" ma "+Arrays.toString(gracze[who[i]].hand)+"|");
 		}
-		for(int i=0;i<results.length-1;i++)
+		System.out.println("Finalowcy: "+results.length);
+		System.out.println(Arrays.deepToString(results));
+		for(int i=0;i<results.length;i++)
 		{
-			for(int j=0;i<results.length;j++)
+			for(int j=0;j<results.length;j++)
 			{
 				if(i==j)
 				{
+					System.out.println("a");
 					continue;
 				}
-				else
+				else if(results[i].length!=results[j].length)
 				{
-					for(int k=0;k<4;k++)
+					System.out.println("b");
+					if(results[i][0]<results[j][0])
 					{
-						if(k<results[i].length-1 && results[i][k]==results[j][k])
+						gracze[who[i]].points++;
+					}
+				}
+				else if(results[i].length==results[j].length)
+				{
+					System.out.println("c");
+					for(int k=0;k<results[i].length;k++)
+					{
+						if(results[i][k]==results[j][k])
 						{
-							continue;
+							if(k==results[i].length-1)
+							{
+								gracze[who[i]].points++;
+							}
 						}
 						else
 						{
-							if(k==results[i].length-1 && results[i][k]==results[j][k])
+							break;
+						}
+					}
+					for(int k=0;k<results[i].length;k++)
+					{
+						if(results[i][k]<=results[j][k])
+						{
+							if(results[i][k]<results[j][k])
 							{
-								gracze[i].points++;
-								gracze[j].points++;
-								break;
+								gracze[who[i]].points++;
 							}
-							else if(results[i][k]<results[j][k])
-							{
-								gracze[i].points++;
-								break;
-							}
-							else
-							{
-								break;
-							}
+						}
+						else
+						{
+							break;
 						}
 					}
 				}
@@ -356,17 +376,18 @@ public class Table
 		best_result=0;
 		for(Player p : gracze)
 		{
+			System.out.println("Gracz "+p.id+" ma "+p.points+" punkty|");
 			if(p.points>best_result)
 			{
 				best_result=p.points;
 			}
 		}
-		
 		payment(best_result,who);
 	}
 	
 	private void payment(int points, int[] who) 
 	{
+		System.out.println("Wyplata dla: "+points+" punktow|");
 		draw=0;
 		for(Player p : gracze)
 		{
@@ -394,18 +415,40 @@ public class Table
 					else
 					{
 						p.cash+=pot;
-						System.out.println("Gracz "+p.id+" bierze z puli "+pot+"|");
+						System.out.println("Gracz "+p.id+" zgarnia pule "+pot+"|");
+						pot=0;
 					}
 				}
 			}
-			payment(points-1,who);
 		}
 		if(draw>1)
 		{
-			System.out.println("Zaszedl remis, co zostalo w puli przepada|");
+			System.out.println("Remis, "+pot+" z puli przepada|");
+			pot=0;
 		}
 	}
-
+	
+	// ##### METODY PUBLICZNE #####
+	public boolean quit(int player_id)
+	{
+		gracze[player_id].lost=true;
+		gracze[player_id].active=false;
+		active_players--;
+		temp=0;
+		for(Player p : gracze)
+		{
+			if(p.lost==false)
+			{
+				temp++;	
+			}
+		}
+		if(temp<=1)
+		{
+			alive=false;
+		}
+		return alive;
+	}
+	
 	public int[] getHand(int player_id)
 	{
 		return gracze[player_id].getHand();
@@ -421,9 +464,19 @@ public class Table
 		return gracze[player_id].active;
 	}
 	
+	public boolean checkSwapping()
+	{
+		return swapping;
+	}
+	
 	public int getCurrent()
 	{
 		return current;
+	}
+	
+	public int getMyBet(int player_id)
+	{
+		return gracze[player_id].bet;
 	}
 	
 	public int getMaxBet()
@@ -443,7 +496,6 @@ public class Table
 	
 	public Object[] listen(Object[] input)
 	{
-		System.out.println(Arrays.deepToString(input));
 		response="";
 		if((Integer)input[1]==1)
 		{
@@ -453,22 +505,36 @@ public class Table
 				case 1:	check((int)input[0]);break;
 				case 2: bet((int)input[0],(int)input[3]);break;
 				case 3: fold((int)input[0]);break;
-				case 4: //quit;
+				case 4: quit((int)input[0]);break;
 			}
+			output=new Object[]{alive};
 		}
 		if((Integer)input[1]==2)
 		{
 			// ### WYMIANA KART ###
+			swapped++;
 			ttab=new int[]{(int)input[3],(int)input[4],(int)input[5],(int)input[6]};
 			swapCards((int)input[0],ttab);
 			output=new Object[]{input[0],input[1],0,gracze[(int)input[0]].getHand()[0],
 													gracze[(int)input[0]].getHand()[1],
 													gracze[(int)input[0]].getHand()[2],
 													gracze[(int)input[0]].getHand()[3]};
+			temp=0;
+			for(Player p : gracze)
+			{
+				if(p.lost==false)
+				{
+					temp++;
+				}
+			}
+			if(temp==swapped)
+			{
+				swapping=false;
+			}
 		}
-		if ((int) input[1] == 1 && checkIfEnd()) 
+		if((int)input[1]==1 && checkIfEnd()) 
 		{
-			if (active_players == 1) 
+			if(active_players == 1) 
 			{
 				endgame();
 			}
@@ -483,31 +549,6 @@ public class Table
 			response += ("Akcja gracza " + current + "|");
 		}
 		new_game=false;
-		System.out.println(response);
 		return output;
 	}
-	
-	/*public static void main (String args[]) 
-	{
-		Table stol = new Table(3,1,2,100);
-		int[] cos;
-		for (int i = 0; i<13;i++) 
-		{
-			System.out.println("Talia : "+stol.talia.talia.size());
-			System.out.println("Dumped: "+stol.talia.dumped.size());
-			cos = stol.getHand(0);
-			System.out.println(cos[0] + " " + cos[1] + " " + cos[2] + " "+ cos[3]);
-			System.out.println(stol.response);
-			stol.response="";
-			Object[] foo = new Object[]{0,1,0,stol.gracze[0].getHand()[0],
-											stol.gracze[0].getHand()[1],
-											stol.gracze[0].getHand()[2],
-											stol.gracze[0].getHand()[3]};
-			stol.listen(foo);
-			//stol.swapCards(0, stol.gracze[0].getHand());
-		}
-		//System.out.println(stol.nextPlayer(1));
-		System.out.println(stol.response);
-		System.out.println(stol.current);
-	}*/
 }
