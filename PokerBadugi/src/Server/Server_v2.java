@@ -14,6 +14,7 @@ public class Server_v2 {
 	private static int maxClientsCount = 1;
 	public static Table table;
 	public static int bill;
+	static String response;
 	public static void main(String args[]) {
 		clientThread_v2[] threads = null;
 
@@ -22,7 +23,8 @@ public class Server_v2 {
 			if (Integer.parseInt(args[1]) <= 6
 					&& Integer.parseInt(args[1]) >= 2) {
 				maxClientsCount = Integer.parseInt(args[1]);
-				table=new Table(maxClientsCount,0,0,200);
+				table=new Table(maxClientsCount,5,10,200);
+				response=table.getResponse();
 				System.out.println("Maksymalna ilość klientów: "
 						+ maxClientsCount + "\nport:" + portNumber);
 				bill=Integer.parseInt(args[2]);
@@ -48,6 +50,9 @@ public class Server_v2 {
 					if (threads[i] == null) {
 						threads[i] = new clientThread_v2(clientSocket, threads,table.getHand(i), table,  bill);						
 						threads[i].start();
+						PrintStream os = new PrintStream(
+								clientSocket.getOutputStream());
+						os.println(response);
 						break;
 					}
 				}

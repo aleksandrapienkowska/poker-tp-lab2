@@ -47,8 +47,10 @@ public class clientThread_v2 extends Thread{
 		            if (threads[i] == this) {
 		              Id=i;
 		              OutputData[0]=i;
-		              os.println("\nJestes graczem  "+ i);
-		              os.println("setBill"+bill);
+		              os.println("Jestes graczem  "+ i+"|");
+		              os.println("setBill"+table.getCash(i));
+		              os.println("setPot"+table.getPot());
+		              os.println("setMaxBet"+table.getMaxBet());
 		              setCards(Id);
 		            
 		             
@@ -62,7 +64,7 @@ public class clientThread_v2 extends Thread{
 		 while(true){
 			
 			 data=is.readLine();
-			
+			//os.println("Kolej gracza nr  "+table.getCurrent());
 			
 				
 			if(data!=null){
@@ -80,11 +82,11 @@ public class clientThread_v2 extends Thread{
 					OutputData[3]=Integer.parseInt(data.substring(2));
 					break;}
 				case "ca" :{OutputData[1]=1;
-					OutputData[2]=3; 
+					OutputData[2]=2; 
 					OutputData[3]=Integer.parseInt(data.substring(2));
 					break;}
 				case "fo" :{OutputData[1]=1;
-					OutputData[2]=4; 
+					OutputData[2]=3; 
 					break;}
 				case "al" :{OutputData[1]=1;
 					OutputData[2]=2; 
@@ -115,20 +117,33 @@ public class clientThread_v2 extends Thread{
 				
 				InputData=table.listen(Output);
 				
-				for(int z=0;z<7;z++){
-					
-					System.out.println(InputData[z].toString());
-					
-					//System.out.println(OutputData[z]);
-					}
+				
+				if(OutputData[1]==2){
 				int l=0;
 				for(int k=3;k<InputData.length;k++){
 					this.cards[l]=Integer.parseInt(InputData[k].toString());
-					System.out.println("karty"+this.cards[l]);
-					os.println(Integer.parseInt(InputData[k].toString()));
+					//System.out.println("karty"+this.cards[l]);
+					//os.println(Integer.parseInt(InputData[k].toString()));
 					l++;
 				}
 				setCards(this.Id);
+				}
+				else{
+					os.println("setBill"+table.getCash(this.Id));
+					
+				}
+				 synchronized (this) {
+				  String message=table.getResponse();  	
+			          for (int i = 0; i < maxClientsCount; i++) {
+			        	  threads[i].os.println("setPot"+table.getPot());
+				          threads[i].os.println("setMaxBet"+table.getMaxBet());
+			        	  threads[i].os.println(message);
+			        	  threads[i].os.flush();
+			            }
+			          }
+			        
+				
+				
 				for(int k=1;k<7; k++){
 					OutputData[k]=0;
 				}
@@ -146,7 +161,7 @@ public class clientThread_v2 extends Thread{
 	    	
 	          for (int i = 0; i < maxClientsCount; i++) {
 	            if (threads[i] == this) {
-	              threads[i] = null;
+	              //threads[i] = null;
 	            }
 	          }
 	        }
@@ -176,7 +191,7 @@ public class clientThread_v2 extends Thread{
 		  String[] colors={"czerwo", "wino","zoladz","dzwonek"};
 		  String[] figures={"A", "2","3","4","5","6","7","8","9","10","J","Q","K"};
 		  for(int k=0; k<4;k++){
-			  System.out.println("setCards"+figures[Deck.val(threads[i].cards[k])-1]+"  "+colors[Deck.col(threads[i].cards[k])-1]);
+			  //System.out.println("setCards"+figures[Deck.val(threads[i].cards[k])-1]+"  "+colors[Deck.col(threads[i].cards[k])-1]);
               os.println("setCards"+figures[Deck.val(threads[i].cards[k])-1]+"  "+colors[Deck.col(threads[i].cards[k])-1]);
 	  }}
 }

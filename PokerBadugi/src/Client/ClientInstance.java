@@ -60,8 +60,8 @@ public class ClientInstance {
 	 JTextArea game= new JTextArea(800,200);
 	 Writer wr ;
 	 PrintWriter pw;
-	
-
+	int bill;
+	int maxbet;
 	 
 	public ClientInstance(OutputStream out, InputStream in){
 	
@@ -132,7 +132,7 @@ public class ClientInstance {
 		pw.flush();
 		//game.append(sendAction("ch", Payment.getText()));
 
-		
+		Payment.setText("");
 			
 			
 			}
@@ -142,18 +142,20 @@ public class ClientInstance {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			
-			
+			int k=Integer.parseInt(Payment.getText());
+			//while(k<=maxbet||k>bill){
 			try{
-				int k=Integer.parseInt(Payment.getText());
+				k=Integer.parseInt(Payment.getText());
+				
 			}
 			catch(Exception z){
 				game.append("Nieprawidlowa kwota");
 			}
+			//}
 			pw.println(sendAction("be", Payment.getText()));
 			pw.flush();
 				//game.append(sendAction("be", Payment.getText()));
-			
+			Payment.setText("");
 			
 			}
 		
@@ -162,38 +164,42 @@ public class ClientInstance {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			
+			int k=Integer.parseInt(Payment.getText());
+			//while(k<maxbet||k>bill){
 			try{
-				int k=Integer.parseInt(Payment.getText());
+				
+				k=Integer.parseInt(Payment.getText());
 			}
 			catch(Exception z){
 				game.append("Nieprawidlowa kwota");
 			}
+			//}
 			pw.println(sendAction("ra", Payment.getText()));
 			pw.flush();
 				//game.append(sendAction("ra", Payment.getText()));
-			
-			
-			
+			Payment.setText("");
 			}
+			
+			
 		
 	});
 	Call.addActionListener(new ActionListener(){
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			
+			int k=Integer.parseInt(Payment.getText());
+			//while(k==maxbet||k>bill){
 			try{
-				int k=Integer.parseInt(Payment.getText());
+				k=Integer.parseInt(Payment.getText());
 			}
 			catch(Exception z){
 				game.append("Nieprawidlowa kwota");
-			}
+			}//}
 			pw.println(sendAction("ca", Payment.getText()));
 			pw.flush();
 				//game.append(sendAction("ca", Payment.getText()));
 			
-			
+			Payment.setText("");
 			
 			}
 		
@@ -203,17 +209,12 @@ public class ClientInstance {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			
-			try{
-				int k=Integer.parseInt(Payment.getText());
-			}
-			catch(Exception z){
-				game.append("Nieprawidlowa kwota");
-			}
+			
 			pw.println("fo");
 			pw.flush();
 				//game.append("fo", Payment.getText()));
 			
-			
+			Payment.setText("");
 			
 			}
 		
@@ -222,18 +223,19 @@ public class ClientInstance {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			
+			int k=Integer.parseInt(Payment.getText());
+			//while(k>bill){
 			try{
-				int k=Integer.parseInt(Payment.getText());
+				k=Integer.parseInt(Payment.getText());
 			}
 			catch(Exception z){
 				game.append("Nieprawidlowa kwota");
-			}
+			}//}
 			pw.println(sendAction("al", Payment.getText()));
 			pw.flush();
 				//game.append(sendAction("al", Payment.getText()));
 			
-			
+			Payment.setText("");
 			
 			}
 		
@@ -247,6 +249,7 @@ public class ClientInstance {
 			for(Integer i=0;i<cardOk.length;i++){
 				if(cardOk[i].isSelected()){
 					selected=selected+Integer.toString(i);
+					
 				}
 				else{
 					selected=selected+"n";
@@ -254,7 +257,7 @@ public class ClientInstance {
 			}
 			pw.println("cc"+selected);			
 			pw.flush();
-					
+			
 			}
 		
 	});
@@ -266,30 +269,45 @@ public class ClientInstance {
 		text = br.readLine();
 		int l=0;
 	
-	while(text.startsWith("setBill")){
+	if(text.startsWith("setBill")){
 			BalanceAmount.setText(text.replace("setBill",""));
 			text = br.readLine();	
+			bill=Integer.parseInt(BalanceAmount.getText());
 	}
-		
+	else{}
+	
+	if(text.startsWith("setPot")){
+		TotalAmount.setText(text.replace("setPot", ""));
+		text=br.readLine();
+	}		
+	if(text.startsWith("setMaxBet")){
+		MaxBetAmount.setText(text.replace("setMaxBet", ""));
+		maxbet=Integer.parseInt(MaxBetAmount.getText());
+		text=br.readLine();
+	}
+	
+	
 		while(text.startsWith("setCards"))
 		{
-			
+			System.out.println(text.replace("setCards",""));
 			card[l].setText(text.replace("setCards",""));
 			//System.out.println(text.replace("setCards",""));
 			window.repaint();
 			l++;
 			text = br.readLine();
-			
+			if(l==4){
+				l=0;
+			}
 		}
 		
 		
 		
-		game.append(text);
+		broadcast(text.replace("|","\n"));
 
 		} catch (IOException e) {
-		game.append("Connection failure");
+		game.append("Utracono połączenie z serverem");
 		} catch (NullPointerException e) {
-		game.append("Null Pointer failure");
+		game.append("Utracono połączenie z serverem");
 		}
 		}
 	
@@ -297,7 +315,8 @@ public class ClientInstance {
 	}
 	
 	public void broadcast(String message){
-		game.append(text);
+		game.append(message);
+		window.repaint();
 	}
 	
 	public static String sendAction(String action, String amount){
