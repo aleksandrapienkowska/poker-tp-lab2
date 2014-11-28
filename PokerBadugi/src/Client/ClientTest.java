@@ -33,10 +33,8 @@ public class ClientTest {
    
    
 
-	} catch (UnknownHostException e) {
-	Client.broadcast("ConectionFailed");
-	} catch (IOException e) {
-	Client.broadcast("No Input Output");
+	} catch (Exception e) {
+	Client.broadcast("Nie można nawiązać połączenia z serverem");
 	}
 	
 	}
