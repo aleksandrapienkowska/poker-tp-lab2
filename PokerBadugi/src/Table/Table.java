@@ -89,7 +89,7 @@ public class Table
 			if(which[i]>=0)
 			{
 				talia.dumpCard(which[i]);
-				ttab[temp]=talia.takeCard();
+				ttab[temp++]=talia.takeCard();
 			}
 		}
 		response+=("Gracz "+who+" wymienia "+ttab.length+" karty|");
@@ -310,7 +310,7 @@ public class Table
 		newGame();
 	}
 	
-	// ##### OBSLUGA SHOWDOWN'U ######
+	// ##### OBSLUGA SHOWDOWN'U #####
 	private void showdown(int[] who)
 	{
 		response+=("Showdown!|");
@@ -320,8 +320,6 @@ public class Table
 			results[i]=krupier.countHand(gracze[who[i]].getHand());
 			response+=("Gracz "+who[i]+" ma "+Arrays.toString(gracze[who[i]].hand)+"|");
 		}
-		response+=("Finalowcy: "+results.length);
-		response+=(Arrays.deepToString(results));
 		for(int i=0;i<results.length;i++)
 		{
 			for(int j=0;j<results.length;j++)
