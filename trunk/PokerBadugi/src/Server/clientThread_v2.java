@@ -17,7 +17,7 @@ public class clientThread_v2 extends Thread {
 	int Id;
 	private Table table;
 	public static int bill;
-	
+
 	public clientThread_v2(Socket clientSocket, clientThread_v2[] threads,
 			int t[], Table table, int bill) {
 		this.clientSocket = clientSocket;
@@ -63,7 +63,12 @@ public class clientThread_v2 extends Thread {
 
 			String data = "";
 			while (true) {
+				synchronized (this) {
+					for (int i = 0; i < maxClientsCount; i++) {
+						setCards(Id);
+					}
 
+				}
 				data = is.readLine();
 
 				if (data != null) {
@@ -76,14 +81,18 @@ public class clientThread_v2 extends Thread {
 						case "ch": {
 							OutputData[1] = 1;
 							OutputData[2] = 1;
+							if (table.getMyBet(this.Id) != table.getMaxBet()) {
+								OutputData[3] = -2;
+							}
 							break;
 						}
 						case "be": {
 							OutputData[1] = 1;
 							OutputData[2] = 2;
 							OutputData[3] = Integer.parseInt(data.substring(2));
-							if ( OutputData[3] > table.getCash(this.Id)|| table.getRound()==1) {
-								OutputData[3]=-1;
+							if (OutputData[3] > table.getCash(this.Id)
+									|| table.getMaxBet() != 0) {
+								OutputData[3] = -2;
 							}
 							break;
 						}
@@ -92,8 +101,10 @@ public class clientThread_v2 extends Thread {
 							OutputData[2] = 2;
 							OutputData[3] = Integer.parseInt(data.substring(2));
 							if (OutputData[3] < table.getMaxBet()
-									|| OutputData[3] > table.getCash(this.Id)) {
-								OutputData[3]=-1;
+									- table.getMyBet(this.Id)
+									|| OutputData[3] > table.getCash(this.Id)
+									|| table.getMaxBet() == 0) {
+								OutputData[3] = -2;
 							}
 							break;
 						}
@@ -101,8 +112,10 @@ public class clientThread_v2 extends Thread {
 							OutputData[1] = 1;
 							OutputData[2] = 2;
 							OutputData[3] = Integer.parseInt(data.substring(2));
-							if (OutputData[3]!=table.getMaxBet()-table.getMyBet(this.Id)|| OutputData[3] > table.getCash(this.Id)) {
-								OutputData[3]=-1;
+							if (OutputData[3] != table.getMaxBet()
+									- table.getMyBet(this.Id)
+									|| OutputData[3] > table.getCash(this.Id)) {
+								OutputData[3] = -2;
 							}
 							break;
 						}
@@ -116,7 +129,7 @@ public class clientThread_v2 extends Thread {
 							OutputData[2] = 2;
 							OutputData[3] = Integer.parseInt(data.substring(2));
 							if (OutputData[3] != table.getCash(this.Id)) {
-								OutputData[3]=-1;
+								OutputData[3] = -2;
 							}
 							break;
 						}
@@ -136,35 +149,32 @@ public class clientThread_v2 extends Thread {
 							break;
 						}
 
-						
-						  for(int k=0;k<OutputData.length;k++){
-						  System.out.println(OutputData[k]); }
-						 
-						if(OutputData[3]>=0){
-						Integer[] Output = new Integer[7];
-						for (int l = 0; l < 7; l++) {
+						if (OutputData[3] >= -1) {
+							Integer[] Output = new Integer[7];
+							for (int l = 0; l < 7; l++) {
 
-							Output[l] = Integer.valueOf(OutputData[l]);
-						}
-						
-						InputData = table.listen(Output);
-
-						if (OutputData[1] == 2) {
-							int l = 0;
-							for (int k = 3; k < InputData.length; k++) {
-								this.cards[l] = Integer.parseInt(InputData[k]
-										.toString());
-								// System.out.println("karty"+this.cards[l]);
-								// os.println(Integer.parseInt(InputData[k].toString()));
-								l++;
+								Output[l] = Integer.valueOf(OutputData[l]);
 							}
-							setCards(this.Id);
-						}
-						message = table.getResponse();
+
+							InputData = table.listen(Output);
+
+							if (OutputData[1] == 2) {
+								int l = 0;
+								for (int k = 3; k < InputData.length; k++) {
+									this.cards[l] = Integer
+											.parseInt(InputData[k].toString());
+									// System.out.println("karty"+this.cards[l]);
+									// os.println(Integer.parseInt(InputData[k].toString()));
+									l++;
+								}
+								setCards(this.Id);
+							}
+							message = table.getResponse();
 						}
 					} else {
-						if (table.checkActive(this.Id))
+						if (table.checkActive(this.Id)) {
 							os.println("Poczekaj na swoją kolej|");
+						}
 					}
 					synchronized (this) {
 
@@ -176,7 +186,10 @@ public class clientThread_v2 extends Thread {
 							threads[i].os.println("setPot" + table.getPot());
 							threads[i].os.println("setMaxBet"
 									+ table.getMaxBet());
-
+							for (int k = 0; k < maxClientsCount; k++)
+								threads[i].os.println("setBetsAmount"
+										+ "Player" + k + " "
+										+ table.getMyBet(k) + "  ");
 							threads[i].os.flush();
 						}
 					}
@@ -193,19 +206,13 @@ public class clientThread_v2 extends Thread {
 
 			}
 			synchronized (this) {
-
+				int k = 0;
 				for (int i = 0; i < maxClientsCount; i++) {
 					if (threads[i] == this) {
-						int[] OutputClose = { i, 1, 4, 0, 0, 0, 0 };
-						Integer[] Output_close = new Integer[7];
-						for (int l = 0; l < 7; l++) {
-
-							Output_close[l] = Integer.valueOf(OutputClose[l]);
-						}
-
-						InputData = table.listen(Output_close);
-
+						table.quit(i);
+						k = i;
 					}
+					threads[i].os.println("|Gracz" + k + "opuścił gre|");
 				}
 			}
 
@@ -234,8 +241,9 @@ public class clientThread_v2 extends Thread {
 				"J", "Q", "K" };
 		for (int k = 0; k < 4; k++) {
 			// System.out.println("setCards"+figures[Deck.val(threads[i].cards[k])-1]+"  "+colors[Deck.col(threads[i].cards[k])-1]);
-			os.println("setCards" + figures[Deck.val(threads[i].cards[k]) - 1]
-					+ "  " + colors[Deck.col(threads[i].cards[k]) - 1]);
+			os.println("setCards" + figures[Deck.val(table.getHand(i)[k]) - 1]
+					+ "  " + colors[Deck.col(table.getHand(i)[k]) - 1]);
+			os.flush();
 		}
 	}
 }

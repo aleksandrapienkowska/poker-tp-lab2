@@ -23,11 +23,11 @@ public class Server_v2 {
 			if (Integer.parseInt(args[1]) <= 6
 					&& Integer.parseInt(args[1]) >= 2) {
 				maxClientsCount = Integer.parseInt(args[1]);
-				table=new Table(maxClientsCount,5,10,200);
+				table=new Table(maxClientsCount,Integer.parseInt(args[2]),Integer.parseInt(args[3]),Integer.parseInt(args[4]));
 				response=table.getResponse();
 				System.out.println("Maksymalna ilość klientów: "
 						+ maxClientsCount + "\nport:" + portNumber);
-				bill=Integer.parseInt(args[2]);
+				bill=Integer.parseInt(args[3]);
 			} else {
 				System.out
 						.println("Podano nieprawidłowe ustawienia początkowe");
@@ -35,9 +35,7 @@ public class Server_v2 {
 			}
 			threads = new clientThread_v2[maxClientsCount];
 			serverSocket = new ServerSocket(portNumber);
-		} catch (IOException e) {
-			System.out.println(e);
-		} catch (Exception z) {
+		}  catch (Exception z) {
 			System.out.println("Nieprawidlowe parametry uruchomieniowe gry");
 		}
 

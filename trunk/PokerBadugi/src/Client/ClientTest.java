@@ -25,7 +25,7 @@ public class ClientTest {
 	try {
 	
 		
-	s = new Socket(InetAddress.getLocalHost(), 4444);
+	s = new Socket(InetAddress.getLocalHost(), Integer.parseInt(args[0]));
 	in = s.getInputStream();
 	out = s.getOutputStream();
 	InputStreamReader isr = new InputStreamReader(in);
