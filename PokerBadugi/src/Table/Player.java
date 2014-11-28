@@ -4,6 +4,7 @@ public class Player
 {
 	int 	id,
 			bet,
+			round_bet,
 			cash,
 			temp,
 			points;
@@ -62,17 +63,6 @@ public class Player
 		cash=amount;
 	}
 	
-	public void changeBet(int how,int amount)
-	{
-		if(how==0)
-		{
-			bet=amount;
-		}
-		if(how==1)
-		{
-			bet+=amount;
-		}
-	}
 	public boolean checkAll()
 	{
 		return all_in;
@@ -85,6 +75,7 @@ public class Player
 
 	public void bet(int what) 
 	{
+		round_bet=what;
 		cash-=what;
 		bet+=what;
 	}

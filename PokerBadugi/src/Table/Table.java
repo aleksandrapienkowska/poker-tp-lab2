@@ -232,6 +232,7 @@ public class Table
 		for(Player p : gracze)
 		{
 			p.leader=false;
+			p.round_bet=0;
 		}
 		for(int i=0;i<gracze.length;i++)
 		{
@@ -265,7 +266,8 @@ public class Table
 			gracze[i].all_in=false;
 			gracze[i].small_blind=false;
 			gracze[i].big_blind=false;
-			gracze[i].changeBet(0,0);
+			gracze[i].bet=0;
+			gracze[i].round_bet=0;
 			gracze[i].points=0;
 		}
 		response+=("|Rozpoczyna sie nowa partia...|");
@@ -471,7 +473,7 @@ public class Table
 	
 	public int getMyBet(int player_id)
 	{
-		return gracze[player_id].bet;
+		return gracze[player_id].round_bet;
 	}
 	
 	public int getMaxBet()
