@@ -104,7 +104,7 @@ public class ClientInstance {
 			window.add(PanelInfo);
 			window.add(PanelAuction);
 			window.add(PanelCards);
-	        window.setSize(800,500);
+	        window.setSize(400,500);
 			window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			window.setVisible(true);
 			
@@ -116,7 +116,7 @@ public class ClientInstance {
 				pw = new PrintWriter(out);
 				wr = new OutputStreamWriter(out);
 			   
-			   
+			
 
 				
 	
@@ -142,19 +142,18 @@ public class ClientInstance {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			int k=Integer.parseInt(Payment.getText());
-			//while(k<=maxbet||k>bill){
+		int k=-1;
+			
+	
 			try{
 				k=Integer.parseInt(Payment.getText());
-				
+				pw.println(sendAction("be", Payment.getText()));
+				pw.flush();
 			}
 			catch(Exception z){
 				game.append("Nieprawidlowa kwota");
+				
 			}
-			//}
-			pw.println(sendAction("be", Payment.getText()));
-			pw.flush();
-				//game.append(sendAction("be", Payment.getText()));
 			Payment.setText("");
 			
 			}
@@ -164,19 +163,22 @@ public class ClientInstance {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			int k=Integer.parseInt(Payment.getText());
-			//while(k<maxbet||k>bill){
+			
+			int k=-1;
+			
+			
 			try{
 				
 				k=Integer.parseInt(Payment.getText());
+				pw.println(sendAction("ra", Payment.getText()));
+				pw.flush();
 			}
 			catch(Exception z){
 				game.append("Nieprawidlowa kwota");
 			}
-			//}
-			pw.println(sendAction("ra", Payment.getText()));
-			pw.flush();
-				//game.append(sendAction("ra", Payment.getText()));
+			
+			
+				
 			Payment.setText("");
 			}
 			
@@ -187,18 +189,19 @@ public class ClientInstance {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			int k=Integer.parseInt(Payment.getText());
-			//while(k==maxbet||k>bill){
+			int k=-1;
+			
+			
 			try{
 				k=Integer.parseInt(Payment.getText());
+				pw.println(sendAction("ca", Payment.getText()));
+				pw.flush();
+					
 			}
 			catch(Exception z){
 				game.append("Nieprawidlowa kwota");
-			}//}
-			pw.println(sendAction("ca", Payment.getText()));
-			pw.flush();
-				//game.append(sendAction("ca", Payment.getText()));
-			
+			}
+		
 			Payment.setText("");
 			
 			}
@@ -223,17 +226,19 @@ public class ClientInstance {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			int k=Integer.parseInt(Payment.getText());
-			//while(k>bill){
+			int k=-1;
+			
+			
 			try{
 				k=Integer.parseInt(Payment.getText());
+				pw.println(sendAction("al", Payment.getText()));
+				pw.flush();
 			}
 			catch(Exception z){
 				game.append("Nieprawidlowa kwota");
-			}//}
-			pw.println(sendAction("al", Payment.getText()));
-			pw.flush();
-				//game.append(sendAction("al", Payment.getText()));
+			}
+			
+				
 			
 			Payment.setText("");
 			
@@ -257,7 +262,9 @@ public class ClientInstance {
 			}
 			pw.println("cc"+selected);			
 			pw.flush();
-			
+			for(Integer i=0;i<cardOk.length;i++){
+				cardOk[i].setSelected(false);
+			}
 			}
 		
 	});
@@ -269,27 +276,30 @@ public class ClientInstance {
 		text = br.readLine();
 		int l=0;
 	
-	if(text.startsWith("setBill")){
+	while(text.startsWith("setBill")){
 			BalanceAmount.setText(text.replace("setBill",""));
 			text = br.readLine();	
 			bill=Integer.parseInt(BalanceAmount.getText());
 	}
-	else{}
 	
-	if(text.startsWith("setPot")){
+	
+	while(text.startsWith("setPot")){
 		TotalAmount.setText(text.replace("setPot", ""));
 		text=br.readLine();
 	}		
-	if(text.startsWith("setMaxBet")){
+	while(text.startsWith("setMaxBet")){
 		MaxBetAmount.setText(text.replace("setMaxBet", ""));
 		maxbet=Integer.parseInt(MaxBetAmount.getText());
 		text=br.readLine();
 	}
-	
+	while(text.startsWith("setTitle")){
+		window.setTitle("Badugi"+text.replace("setTitle", ""));
+		text=br.readLine();
+	}
 	
 		while(text.startsWith("setCards"))
 		{
-			System.out.println(text.replace("setCards",""));
+			//System.out.println(text.replace("setCards",""));
 			card[l].setText(text.replace("setCards",""));
 			//System.out.println(text.replace("setCards",""));
 			window.repaint();
