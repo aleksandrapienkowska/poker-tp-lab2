@@ -189,7 +189,7 @@ public class Table
 	{
 		temp=nextPlayer(current+1);
 		if((gracze[temp].leader==true && (gracze[temp].big_blind==false || round>1)) 
-			|| active_players==1 || (gracze[current].big_blind==true && round==1))
+			|| active_players==1 || (gracze[current].big_blind==true && round==1 && max_bet==big_blind))
 		{
 			return true;
 		}
@@ -265,6 +265,7 @@ public class Table
 			if(gracze[i].big_blind==true)
 			{
 				current=nextPlayer(i+1);
+				gracze[current].leader=true;
 				response+=("Akcja gracza "+current+"|");
 			}
 		}
