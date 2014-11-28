@@ -62,19 +62,19 @@ public class Evaluator
 		}
 		length=temp.size();
 		result=new int[length];
-		System.out.println(length+" "+temp);// ###
+		//System.out.println(length+" "+temp);// ###
 		
 		for(int i=0;i<length;i++)
 		{
 			temp.set(i,100*(4-length)+Deck.val(temp.get(i)));
-			System.out.println(temp.get(i));
+			//System.out.println(temp.get(i));
 		}
 		Collections.sort(temp,Collections.reverseOrder());
 		for(int i=0;i<length;i++)
 		{
 			result[i]=temp.get(i);
 		}
-		System.out.println(temp);
+		//System.out.println(temp);
 		return result;
 	}
 	

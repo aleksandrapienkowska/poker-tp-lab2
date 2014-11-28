@@ -41,7 +41,7 @@ public class Table
 		initial_cash=cash;
 		response="";
 		active_players=size;
-		round=1;
+		round=4;
 		pot=0;
 		dealer=los.nextInt(size);
 		for(int i=0;i<gracze.length;i++)
@@ -51,11 +51,11 @@ public class Table
 			gracze[i].setHand(startingHand());
 			System.out.println(Arrays.toString(gracze[i].hand));
 		}
-		response+=("|Rozpoczyna sie nowa partia...|");
+		System.out.println("|Rozpoczyna sie nowa partia...|");
 		betBlind(dealer+1,small_blind);
 		betBlind(temp+1,big_blind);
 		current=nextPlayer(temp+1);
-		response+=("Akcja gracza "+current+"|");
+		System.out.println("Akcja gracza "+current+"|");
 	}
 	
 	private int nextPlayer(int try_id)
@@ -103,7 +103,7 @@ public class Table
 				System.out.println("Ciagne "+ttab[temp++]);
 			}
 		}
-		response+=("Gracz "+who+" wymienia "+ttab.length+" karty|");
+		System.out.println("Gracz "+who+" wymienia "+ttab.length+" karty|");
 		gracze[who].changeCards(which,ttab);
 	}
 	
@@ -145,12 +145,12 @@ public class Table
 			if(what==big_blind)
 			{
 				max_bet=big_blind;
-				response+="Gracz "+who+" stawia duza ciemna|";
+				System.out.println"Gracz "+who+" stawia duza ciemna|";
 				gracze[who].big_blind=true;
 			}
 			else if(what==small_blind)
 			{
-				response+="Gracz "+who+" stawia mala ciemna|";
+				System.out.println"Gracz "+who+" stawia mala ciemna|";
 				gracze[who].small_blind=true;
 			}
 			temp=who;
@@ -172,7 +172,7 @@ public class Table
 			}
 			gracze[who].bet(amount);
 			pot+=amount;
-			response+=("Gracz "+who+" stawia "+amount+", lacznie: "+gracze[who].bet+"|");
+			System.out.println("Gracz "+who+" stawia "+amount+", lacznie: "+gracze[who].bet+"|");
 			if(amount>max_bet)
 			{
 				max_bet=amount;
@@ -207,7 +207,7 @@ public class Table
 			{
 				if(p.active==true)
 				{
-					response+=("Gracz "+p.id+" zgarnia pule!|");
+					System.out.println("Gracz "+p.id+" zgarnia pule!|");
 					p.cash+=pot;
 				}
 			}
@@ -230,7 +230,7 @@ public class Table
 	
 	private void fold(int who)
 	{
-		response+=("Gracz "+who+" folduje|");
+		System.out.println("Gracz "+who+" folduje|");
 		gracze[who].fold=true;
 		gracze[who].active=false;
 		active_players--;
@@ -238,7 +238,7 @@ public class Table
 	
 	private void check(int who)
 	{
-		response+=("Gracz "+who+" checkuje|");
+		System.out.println("Gracz "+who+" checkuje|");
 		/*if(gracze[who].big_blind==true && round==1)
 		{
 			newRound();
@@ -250,11 +250,11 @@ public class Table
 		round++;
 		if(round==5)
 		{
-			response+=("Minela tura 4|");
+			System.out.println("Minela tura 4|");
 			endgame();
 			return;
 		}
-		response+=("|Rozpoczyna sie "+round+" tura...|");
+		System.out.println("|Rozpoczyna sie "+round+" tura...|");
 		max_bet=0;
 		for(Player p : gracze)
 		{
@@ -266,7 +266,7 @@ public class Table
 			{
 				current=nextPlayer(i+1);
 				gracze[current].leader=true;
-				response+=("Akcja gracza "+current+"|");
+				System.out.println("Akcja gracza "+current+"|");
 			}
 		}
 	}
@@ -279,7 +279,7 @@ public class Table
 		{
 			if(gracze[i].cash==0)
 			{
-				response+=("Gracz "+i+" przegrywa");
+				System.out.println("Gracz "+i+" przegrywa");
 				gracze[i].lost=true;
 			}
 			if(gracze[i].lost==false)
@@ -295,7 +295,7 @@ public class Table
 			gracze[i].changeBet(0,0);
 			gracze[i].points=0;
 		}
-		response+=("|Rozpoczyna sie nowa partia...|");
+		System.out.println("|Rozpoczyna sie nowa partia...|");
 		max_bet=0;
 		pot=0;
 		round=1;
@@ -303,17 +303,17 @@ public class Table
 		betBlind(dealer+1,small_blind);
 		betBlind(temp+1,big_blind);
 		current=nextPlayer(temp+1);
-		response+=("Akcja gracza "+current+"|");
+		System.out.println("Akcja gracza "+current+"|");
 	}
 	
 	private void showdown(int[] who)
 	{
-		response+=("Showdown!|");
+		System.out.println("Showdown!|");
 		results=new int[who.length][];
 		for(int i=0;i<who.length;i++)
 		{
 			results[i]=krupier.countHand(gracze[who[i]].getHand());
-			response+=("Gracz "+who[i]+" ma "+gracze[who[i]].hand.toString()+"|");
+			System.out.println("Gracz "+who[i]+" ma "+gracze[who[i]].hand.toString()+"|");
 		}
 		for(int i=0;i<results.length-1;i++)
 		{
@@ -388,13 +388,13 @@ public class Table
 					if(pot>p.bet*active_players)
 					{
 						p.cash+=p.bet*active_players;
-						response+=("Gracz "+p.id+" bierze z puli "+p.bet*active_players+"|");
+						System.out.println("Gracz "+p.id+" bierze z puli "+p.bet*active_players+"|");
 						payment(points-1,who);
 					}
 					else
 					{
 						p.cash+=pot;
-						response+=("Gracz "+p.id+" bierze z puli "+pot+"|");
+						System.out.println("Gracz "+p.id+" bierze z puli "+pot+"|");
 					}
 				}
 			}
@@ -402,7 +402,7 @@ public class Table
 		}
 		if(draw>1)
 		{
-			response+=("Zaszedl remis, co zostalo w puli przepada|");
+			System.out.println("Zaszedl remis, co zostalo w puli przepada|");
 		}
 	}
 
