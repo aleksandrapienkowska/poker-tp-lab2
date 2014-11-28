@@ -145,12 +145,12 @@ public class Table
 			if(what==big_blind)
 			{
 				max_bet=big_blind;
-				System.out.println"Gracz "+who+" stawia duza ciemna|";
+				System.out.println("Gracz "+who+" stawia duza ciemna|");
 				gracze[who].big_blind=true;
 			}
 			else if(what==small_blind)
 			{
-				System.out.println"Gracz "+who+" stawia mala ciemna|";
+				System.out.println("Gracz "+who+" stawia mala ciemna|");
 				gracze[who].small_blind=true;
 			}
 			temp=who;
