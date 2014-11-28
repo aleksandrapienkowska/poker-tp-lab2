@@ -190,6 +190,10 @@ public class Table {
 	// ##### OBSLUGA ROZGRYWKI #####
 	private int nextPlayer(int try_id)
 	{
+		if(active_players==1)
+		{
+			return try_id;
+		}
 		if(try_id>=gracze.length)
 		{
 			try_id=0;
