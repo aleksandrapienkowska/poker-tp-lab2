@@ -75,7 +75,7 @@ public class Player
 
 	public void bet(int what) 
 	{
-		round_bet=what;
+		round_bet+=what;
 		cash-=what;
 		bet+=what;
 	}
