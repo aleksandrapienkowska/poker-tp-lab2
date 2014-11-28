@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-public class Table 
-{
+public class Table {
 	Player[] 	gracze;
 	Deck 		talia;
 	Evaluator	krupier;
@@ -163,9 +162,9 @@ public class Table
 			gracze[who].bet(amount);
 			pot+=amount;
 			response+=("Gracz "+who+" stawia "+amount+", lacznie: "+gracze[who].bet+"|");
-			if(amount>max_bet)
+			if(gracze[who].round_bet>max_bet)
 			{
-				max_bet=amount;
+				max_bet=gracze[who].round_bet;
 				for(Player p : gracze)
 				{
 					p.leader=false;
