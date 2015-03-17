@@ -1,0 +1,39 @@
+Interfejs Servera_v2 szkic:
+Server zwraca do metody zewnętrznej tablicę Integer tab[] z poszczególnymi komórkami o
+wartościach i znaczeniach:
+tab[0] -ID gracza od 0-5
+tab[1] -oznaczenie akcji 1 lub 2
+1-gdy akcje bankowe związane z podbijaniem
+2-wymiana kart
+tab[2] -jeżeli akcja bankowa to:
+1-Check
+2-Bet
+3-Raise
+4-Call
+5-Fold
+6-All in
+jeżeli akcja wymiany kart to 0
+tab[3] -jeżeli akcja bankowa to jest to kwota zakładu >=0
+jeżeli akcja wymiany kart to id 1 karty
+tab[4] -jeżeli bankowa 0
+jeżeli wymiana kart to id 2 karty
+tab[5] -jeżeli bankowa 0
+jeżeli wymiana kart to id 3 karty
+tab[6] -jeżeli bankowa 0
+jeżeli wymiana kart to id 4 karty
+Schemat odpowiedzi
+tab[0] -ID gracza od 0-5
+tab[1] -oznaczenie akcji 1 lub 2
+1-gdy akcje bankowe związane z podbijaniem
+2-wymiana kart
+tab[2] -jeżeli akcja bankowa to:
+kwota punktów pozostałych na koncie
+jeżeli akcja wymiany kart to 0
+tab[3] -jeżeli akcja bankowa to jest to kwota postawiona na stole
+jeżeli akcja wymiany kart to id 1 karty
+tab[4] -jeżeli bankowa 0
+jeżeli wymiana kart to id 2 karty
+tab[5] -jeżeli bankowa 0
+jeżeli wymiana kart to id 3 karty
+tab[6] -jeżeli bankowa 0
+jeżeli wymiana kart to id 4 karty
